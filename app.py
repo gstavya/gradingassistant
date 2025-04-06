@@ -13,17 +13,14 @@ import boto3
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
-# Load environment variables
 load_dotenv()
 
-# Flask setup
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'csv', 'docx', 'xlsx', 'heic', 'jpg', 'jpeg', 'png'}
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# AWS + OpenAI setup
 AWS_REGION = os.getenv("AWS_REGION")
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
@@ -52,7 +49,6 @@ prompt = ChatPromptTemplate.from_messages([
     ("user", "{input}")
 ])
 
-# File helpers
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -131,9 +127,8 @@ def evaluate_homework(file_path):
     chain = prompt | llm
     result = chain.invoke({"input": input_text})
     print(f"\nEvaluation Result:\n{result.content}")
-    return 20  # Placeholder: adjust this to parse real score from result.content if needed
+    return 20
 
-# Flask routes
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -176,7 +171,7 @@ def process_grades(gradebook_path, submissions_dir):
     with open(gradebook_path, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            names.append(row[0])  # Assumes names in column A
+            names.append(row[0])
 
     updates = []
     for name in names:
